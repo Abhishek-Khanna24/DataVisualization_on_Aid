@@ -1,0 +1,259 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Visualisation for the Aid data for the countries of the world">
+    <meta name="author" content="Abhishek Khanna ak7907">
+  
+    <title>Simple Sidebar - Start Bootstrap Template</title>
+  
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  
+    <!-- Custom styles for this template -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: sans-serif
+        }
+        h3 {
+            background-color: black;
+            color: white;
+            padding: 5px;
+        }
+        .mainView {
+            display: flex;
+        }
+        .m-axis line{
+            stroke: black;
+        }
+    </style>
+    <script src="d3.js"></script>
+</head>
+<body>
+
+  
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+          <button class="btn btn-primary" id="menu-toggle">Abhishek Khanna (AK7907)</button>
+  
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+  
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+              <li class="nav-item active">
+                <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Visualisation for the Problem set
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="Visualisation1.html">Visualisation 1</a>
+                  <a class="dropdown-item" href="Visualisation2.html">Visualisation 2</a>
+                  <a class="dropdown-item" href="Visualisation2.html">Visualisation 3</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+  
+
+        </div>
+            <h3>Top 5 most frequent purposes of disbursements distribute geographically in terms of  countries that receive donations</h3>
+        <div class="mainView"></div>
+     
+      </div>
+      <!-- /#page-content-wrapper -->
+  
+    </div>
+    <!-- /#wrapper -->
+  
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+    <!-- Menu Toggle Script -->
+    <script>
+      $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+      });
+    </script>
+  
+
+    
+</body>
+<script>
+    
+  
+    let erots = {}
+    function loadData() {
+        return Promise.all([
+            d3.csv("data.csv")
+        ]).then(datasets => {
+            erots.donationsData = datasets[0];
+            return erots;
+        })
+    }
+    function donationsGroup(data) {
+        
+        let code_pr 
+        let pr = {};
+        let ans = data.reduce((ans, d) => {
+            let data_rec = ans[d.recipient] || {
+                "Country": d.recipient
+            }
+            let currPurpose = pr[code_pr] || {
+                "Code":code_pr,
+                "Name":d.coalesced_purpose_name,
+                "Count":0
+            }
+            currPurpose.Count += 1;
+            pr[code_pr] = currPurpose;
+            code_pr = d.coalesced_purpose_code;
+            let prevAmount = Number(data_rec[code_pr] || 0) 
+            data_rec[code_pr] = prevAmount + Number(d.commitment_amount_usd_constant);
+            ans[d.recipient] = data_rec;
+            return ans;
+        }, {})
+        let purposeArr = Object.keys(pr).map(key => pr[key])
+        purposeArr = purposeArr.sort((a,b) => {
+            return d3.descending(a.Count,b.Count);
+        })
+        purposeArr = purposeArr.slice(0,5)
+        let updated = [];
+        let countries = [];
+        Object.keys(ans).forEach(key => {
+            var country = ans[key];
+            countries.push(country.Country);
+            purposeArr.forEach(p => {
+                updated.push({
+                    "Country":country.Country,
+                    "Code": p.Code,
+                    "Name": p.Name,
+                    "Amount": Number(country[p.Code]) || 0
+                })
+            })
+        });
+        //console.log("updated: ", updated);
+        return {data: updated, countries: countries, pr: purposeArr}
+    }
+
+    function getChartConfig() {
+        let width = 1199;
+        let height = 499;
+        let margin = {
+            top: 11,
+            bottom: 99,
+            left: 49,
+            right: 11
+        }
+        let bodyHeight = height - margin.top - margin.bottom;
+        let bodyWidth = width - margin.left - margin.right;
+        let container = d3.select(".mainView")
+                        .append("svg")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .attr("id", "Chart")
+                        .append("g")
+                        .attr("transform", "translate("+[margin.left,margin.top]+")")
+        return { width, height, margin, bodyHeight, bodyWidth, container };
+    }
+
+    function getChartScales(chartData, config) {
+        let { bodyWidth, bodyHeight } = config;
+        let { data, countries, pr } = chartData;
+        let maximumReceived = d3.max(data, (d) => {
+            return d.Amount;
+        })
+        let yScale= d3.scalePoint()
+            //Set the range to go from 0 to the width of the body
+            .range([0,bodyHeight])
+            // .rangePoints([0,bodyWidth])
+            .domain(pr.map(d => d.Code))
+            .padding(3)
+            // .nice();
+
+        let xScale = d3.scalePoint() //d3.scaleBand()
+            .range([0, bodyWidth])
+            .domain(countries)
+            .padding(1)
+        
+        let rScale = d3.scaleLinear()
+                .domain([0,maximumReceived])
+                .range([3,19])
+        
+        let cScale = d3.scaleOrdinal()
+                        .domain(pr.map(d => d.Code))
+                        .range(d3.schemeCategory10)
+            
+        return { xScale, yScale, rScale, cScale }
+    }
+
+    function drawAxesAidsChart(chartData, scales, config){
+        let {xScale, yScale } = scales
+        let {container, margin, height, bodyHeight} = config;
+        let { data, countries, pr } = chartData;
+        let axisX = d3.axisBottom(xScale)
+        container.append("g")
+            .call(axisX)
+            .style("transform", 
+                "translate(0px"+","+bodyHeight+"px)"
+            )
+            .selectAll("text")	
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-45)");
+
+        let axisY = d3.axisLeft(yScale)
+        container.append("g")
+            .call(axisY)
+
+        countries.forEach(country => {
+            container
+                .append("line")
+                    .style("stroke", "#777")
+                    .style("stroke-dasharray", ("3, 3"))
+                    .attr("y1", bodyHeight)
+                    .attr("y2", 0)
+                    .attr("x1", xScale(country))
+                    .attr("x2", xScale(country))
+        })
+    }
+    function drawCircles(chartData, scales, config){
+        let { data, countries, pr } = chartData; 
+        let { bodyWidth, bodyHeight, container } = config;
+        let { xScale, yScale, rScale, cScale } = scales;
+        var circle = container.selectAll("circle")
+            .data(data);
+
+        var circleEnter = circle
+                        .enter()
+                        .append("circle")
+                        .attr("cx", (d) => xScale(d.Country))
+                        .attr("cy", (d) => yScale(d.Code))
+                        .attr("r", (d) => rScale(d.Amount))
+                        .attr("fill", (d) => cScale(d.Code))    
+    }
+    
+    function showData() {
+        let donationsData = erots.donationsData;
+        let data = donationsGroup(donationsData);
+        let config = getChartConfig();
+        let scales = getChartScales(data, config);
+        drawAxesAidsChart(data, scales, config);
+        drawCircles(data, scales, config);
+    }
+    loadData().then(showData);
+
+
+</script>
+</html>
