@@ -1,6 +1,5 @@
 
 # DataVisualization_on_Aid
-# Info Vis Project Template
 
 ## Intro
 
