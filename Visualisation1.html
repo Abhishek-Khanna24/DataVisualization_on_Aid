@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Visualisation for the Aid data for the countries of the world">
+        <meta name="author" content="Abhishek Khanna ak7907">
+      
+        <title>Simple Sidebar - Start Bootstrap Template</title>
+      
+        <!-- Bootstrap core CSS -->
+        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      
+        <!-- Custom styles for this template -->
+        <link href="css/simple-sidebar.css" rel="stylesheet">
+    
+        <style>
+            body {
+                font-family: sans-serif
+            }
+            h3 {
+                background-color: black;
+                color: white;
+                padding: 5px;
+            }
+            .mainView {
+                display: flex;
+            }
+            .m-axis line{
+                stroke: black;
+            }</style>
+        <!-- D3 library goes first --> 
+        <script src="d3/d3.js" defer></script>
+        <script src="d3/d3-array.js" defer></script>
+        
+        <!-- Then our visualization code --> 
+        <script src="visualizations/vis1.js" defer></script>
+        <script src="visualizations/vis2.js" defer></script>
+
+        <!-- Then our code that calls the visualizations --> 
+        <script src="main.js" defer></script>
+
+    </head>
+
+    <body>
+
+        <div id="page-content-wrapper">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+              <button class="btn btn-primary" id="menu-toggle">Abhishek Khanna (AK7907)</button>
+      
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+      
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Visualisation for the Problem set
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="Visualisation2.html">Visualisation 2</a>
+                      <a class="dropdown-item" href="Visualisation3.html">Visualisation 3</a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+      
+        <div id="visualization">
+            <h1>Visualization 1</h1>
+            <div id="vis1"></div>
+            <p> 
+                1. This visualization can easily tell if any country has donated more than received. For example United states, Germany, Japan,
+                United Kingdom have donated much much more than they have received. Countries such as India, Brazil, Thailand have received more
+                Than they have doonated.
+                <br>
+                2. We can also compare between the countries easily. For example: canada has donated more than Italy and has also received more than Italy.
+            </p>
+
+            
+        </div>
+
+        <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+    <!-- Menu Toggle Script -->
+    <script>
+      $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+      });
+    </script>
+        
+    </body>
+</html>

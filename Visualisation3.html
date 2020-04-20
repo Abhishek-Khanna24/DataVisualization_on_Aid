@@ -57,7 +57,7 @@
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="Visualisation1.html">Visualisation 1</a>
                   <a class="dropdown-item" href="Visualisation2.html">Visualisation 2</a>
-                  <a class="dropdown-item" href="Visualisation2.html">Visualisation 3</a>
+
                 </div>
               </li>
             </ul>
@@ -174,14 +174,12 @@
             return d.Amount;
         })
         let yScale= d3.scalePoint()
-            //Set the range to go from 0 to the width of the body
             .range([0,bodyHeight])
-            // .rangePoints([0,bodyWidth])
+
             .domain(pr.map(d => d.Code))
             .padding(3)
-            // .nice();
 
-        let xScale = d3.scalePoint() //d3.scaleBand()
+        let xScale = d3.scalePoint() 
             .range([0, bodyWidth])
             .domain(countries)
             .padding(1)
@@ -192,7 +190,7 @@
         
         let cScale = d3.scaleOrdinal()
                         .domain(pr.map(d => d.Code))
-                        .range(d3.schemeCategory10)
+                        .range(d3.schemeDark2)
             
         return { xScale, yScale, rScale, cScale }
     }
@@ -220,7 +218,7 @@
         countries.forEach(country => {
             container
                 .append("line")
-                    .style("stroke", "#777")
+                    .style("stroke", "#787")
                     .style("stroke-dasharray", ("3, 3"))
                     .attr("y1", bodyHeight)
                     .attr("y2", 0)
